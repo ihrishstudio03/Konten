@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Style Gen v6.0 (Paper & Watercolor)</title>
+<style>
+    :root {
+        --primary: #6d5e52; /* Muted Warm Brown */
+        --secondary: #a3968a;
+        --bg-color: #f4f1ea; /* Warm off-white */
+        --card-bg: #ffffff;
+        --text-color: #3e3a37;
+        --accent-paper: #557b83; /* Cyan for paper mode context */
+        --accent-water: #cca77d; /* Warm ochre for watercolor context */
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d9d4c5' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .container {
+        background: var(--card-bg);
+        width: 100%;
+        max-width: 720px;
+        padding: 35px;
+        border-radius: 18px;
+        box-shadow: 0 15px 30px rgba(90, 80, 70, 0.08);
+        border: 1px solid #e8e4dd;
+    }
+
+    h1 {
+        text-align: center;
+        color: var(--primary);
+        font-size: 28px;
+        margin: 0 0 5px 0;
+        font-weight: 800;
+    }
+
+    p.subtitle {
+        text-align: center;
+        color: var(--secondary);
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    /* STYLE SELECTOR HIGHLIGHT */
+    #style-selector-container {
+        background: #edeae4;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid var(--primary);
+        margin-bottom: 20px;
+    }
+
+    /* SECTION STYLING */
+    .dna-box {
+        background: #f8f6f2;
+        border: 1px solid #e0dcd5;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+
+    .section-header {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #555;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0dcd5;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: 0.2s;
+        font-family: inherit;
+        background: #faf9f7;
+    }
+
+    input:focus, select:focus {
+        border-color: var(--primary);
+        outline: none;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(109, 94, 82, 0.1);
+    }
+
+    /* SLIDE ITEM */
+    .slide-item {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        position: relative;
+    }
+
+    .slide-badge {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: var(--primary);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .text-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #f9f9f9;
+    }
+
+    button.generate-btn {
+        width: 100%;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 18px;
+        font-size: 16px;
+        font-weight: 800;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 20px;
+        box-shadow: 0 6px 0 #4a3f36;
+    }
+    button.generate-btn:active { box-shadow: none; transform: translateY(6px); }
+    button.generate-btn:hover { background-color: #7d6c5f; }
+
+    .result-box { margin-top: 40px; display: none; }
+    
+    .prompt-card {
+        background: #2b2b2b;
+        color: #eee;
+        padding: 18px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        font-family: 'Consolas', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        position: relative;
+        border-left: 5px solid var(--secondary);
+    }
+
+    .prompt-text-content { word-wrap: break-word; margin-right: 60px; }
+
+    .copy-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #4a3f36;
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 11px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎨 Multi-Style Gen v6.0</h1>
+    <p class="subtitle">Paper Craft & Emotional Watercolor</p>
+
+    <div id="style-selector-container">
+        <div class="grid-2">
+            <div>
+                <label style="color:var(--primary); font-size:14px;">PILIH GAYA VISUAL UTAMA</label>
+                <select id="art-style" onchange="updateUIForStyle()" style="border-width:3px; font-weight:bold;">
+                    <option value="watercolor">🎨 Hand-Drawn Watercolor (Earthy & Emotional)</option>
+                    <option value="paper">✂️ 3D Paper Craft (Origami & Depth)</option>
+                </select>
+            </div>
+            <div>
+                <label>Mode Konten</label>
+                <select id="mode" onchange="toggleMode()">
+                    <option value="single">Single Image</option>
+                    <option value="carousel">Carousel (Cerita)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+             <label>Ikon Dekorasi</label>
+            <input type="text" id="icons" value="Daun, awan, buku" placeholder="Benda di sekeliling...">
+        </div>
+        <div>
+            <label>Rasio</label>
+            <select id="ratio">
+                <option value="--ar 4:5">Portrait (IG Feed)</option>
+                <option value="--ar 1:1">Square (1:1)</option>
+                <option value="--ar 9:16">Reels / Story</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="height: 15px;"></div>
+
+    <div class="form-group">
+        <label>Nama Akun Sosmed (Footer)</label>
+        <input type="text" id="sosmed" placeholder="Contoh: @temanguru">
+    </div>
+
+    <div style="height: 15px;"></div>
+
+    <div class="dna-box">
+        <div class="section-header">🧬 Konsistensi Karakter</div>
+        <div class="grid-3">
+            <div>
+                <label>Gender</label>
+                <select id="char-gender">
+                    <option value="Muslim man">Pria Muslim</option>
+                    <option value="Muslim woman hijab">Wanita Hijab</option>
+                    <option value="Little Muslim boy">Anak Laki</option>
+                    <option value="Little Muslim girl hijab">Anak Perempuan</option>
+                </select>
+            </div>
+            <div>
+                <label>Warna Atasan</label>
+                <input type="text" id="char-top" placeholder="Misal: Koko Krem">
+            </div>
+            <div>
+                <label>Warna Bawahan</label>
+                <input type="text" id="char-bottom" placeholder="Misal: Sarung Coklat">
+            </div>
+        </div>
+    </div>
+
+    <div id="single-area">
+        <div class="slide-item">
+            <div class="slide-badge">SINGLE POST</div>
+            <label>Aktivitas Karakter</label>
+            <input type="text" id="act-single" placeholder="Sedang apa? (Misal: Duduk merenung)">
+            
+            <div class="text-group">
+                <div>
+                    <label>Judul Utama (Besar)</label>
+                    <input type="text" id="head-single" placeholder="Contoh: IKHLAS">
+                </div>
+                <div>
+                    <label>Sub-Teks (Kecil)</label>
+                    <input type="text" id="sub-single" placeholder="Contoh: Menerima ketetapan-Nya">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="carousel-area" style="display:none">
+        <div style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+            <label style="margin:0">Jumlah Slide:</label>
+            <select id="slide-count" style="width:100px" onchange="renderSlides()">
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
+        </div>
+        <div id="slides-container"></div>
+    </div>
+    
+    <div id="bg-color-container" style="display:none; margin-top:15px;">
+         <label>Warna Latar (Khusus Paper Mode)</label>
+        <select id="bg-color">
+            <option value="Warm Beige">Beige</option>
+            <option value="Soft Mint Green">Mint Green</option>
+            <option value="Pale Blue">Pale Blue</option>
+        </select>
+    </div>
+
+    <button class="generate-btn" onclick="generatePrompt()">✨ GENERATE PROMPT V6</button>
+
+    <div class="result-box" id="resultArea">
+        <h3 style="text-align:center; font-size:14px; color:#555">HASIL PROMPT SIAP COPY:</h3>
+        <div id="outputContainer"></div>
+    </div>
+</div>
+
+<script>
+    // --- DEFINISI GAYA (STYLE DEFINITIONS) ---
+    const PAPER_STYLE_PROMPT = "3D paper craft illustration, origami style, folded paper texture, low poly art, minimalist composition";
+    // Style Watercolor yang sangat spesifik sesuai permintaan
+    const WATER_STYLE_PROMPT = "hand-drawn watercolor illustration, soft pastel and earthy tones (beige, light brown, soft gray), gentle lighting, soft shadows, warm and slightly melancholic mood, emotional and symbolic visual style, suitable for motivational content, textured watercolor paper background";
+
+    // KAMUS TRANSLATE
+    const dictionary = {
+        "putih":"white", "hitam":"black", "merah":"red", "biru":"blue", "hijau":"green", 
+        "kuning":"yellow", "coklat":"brown", "abu":"grey", "pink":"pink", "ungu":"purple", "krem":"beige",
+        "koko":"koko shirt", "kemeja":"shirt", "kaos":"t-shirt", "gamis":"robe", "dress":"dress",
+        "celana":"trousers", "sarung":"sarong", "rok":"skirt", 
+        "duduk":"sitting", "berdiri":"standing", "baca":"reading", "sholat":"praying", 
+        "jalan":"walking", "lari":"running", "tidur":"sleeping", "sujud":"sujud position",
+        "menangis":"crying", "sedih":"sad", "senyum":"smiling", "merenung":"contemplating",
+        "masjid":"mosque", "taman":"garden", "rumah":"house"
+    };
+
+    function translate(text) {
+        if(!text) return "";
+        return text.toLowerCase().split(' ').map(w => dictionary[w] || w).join(' ');
+    }
+
+    function toggleMode() {
+        const isCarousel = document.getElementById('mode').value === 'carousel';
+        document.getElementById('single-area').style.display = isCarousel ? 'none' : 'block';
+        document.getElementById('carousel-area').style.display = isCarousel ? 'block' : 'none';
+        if(isCarousel) renderSlides();
+    }
+
+    function updateUIForStyle() {
+        const style = document.getElementById('art-style').value;
+        // Hide background selector for watercolor because it's locked to earthy tones
+        document.getElementById('bg-color-container').style.display = style === 'paper' ? 'block' : 'none';
+    }
+
+    function renderSlides() {
+        const count = document.getElementById('slide-count').value;
+        const container = document.getElementById('slides-container');
+        container.innerHTML = "";
+        for(let i=1; i<=count; i++) {
+            container.innerHTML += `
+            <div class="slide-item">
+                <div class="slide-badge">SLIDE ${i}</div>
+                <label>Aktivitas</label>
+                <input type="text" id="act-${i}" placeholder="Aktivitas...">
+                <div class="text-group">
+                    <div><label>Judul Slide ${i}</label><input type="text" id="head-${i}"></div>
+                    <div><label>Sub-Teks Slide ${i}</label><input type="text" id="sub-${i}"></div>
+                </div>
+            </div>`;
+        }
+    }
+
+    function buildTextPrompt(head, sub, sosmed, textStyleDesc) {
+        let p = "";
+        if (head || sub) {
+            p += `. Text Layout: Big bold ${textStyleDesc} "${head}" in center. `;
+            if (sub) p += `Below it, smaller clean font text "${sub}". `;
+        }
+        if (sosmed) p += `Footer: Small text "${sosmed}" at bottom center. `;
+        return p;
+    }
+
+    function generatePrompt() {
+        const selectedStyle = document.getElementById('art-style').value;
+        const ratio = document.getElementById('ratio').value;
+        const sosmed = document.getElementById('sosmed').value;
+        const iconsRaw = translate(document.getElementById('icons').value);
+
+        // 1. TENTUKAN STYLE CORE & ENVIRONMENT LOGIC
+        let mainStylePrompt = "";
+        let envPrompt = "";
+        let textStyleDesc = ""; // Deskripsi gaya teks
+
+        if (selectedStyle === 'paper') {
+             mainStylePrompt = PAPER_STYLE_PROMPT;
+             textStyleDesc = "3D paper text";
+             const bg = document.getElementById('bg-color').value;
+             // Logika Depth of Field untuk Paper
+             envPrompt = `Composition: Depth of field effect. Foreground: Blurry 3D paper ${iconsRaw} (bokeh). Background: Floating ${iconsRaw} behind character. Soft studio lighting, ${bg} background.`;
+        } else {
+             // WATERCOLOR MODE (Strict Style)
+             mainStylePrompt = WATER_STYLE_PROMPT;
+             textStyleDesc = "hand-painted watercolor typography";
+             // Logika Ikon Cat Air (Menyatu dengan kertas, tidak melayang 3D)
+             envPrompt = `Composition: The character is surrounded by hand-painted watercolor decorative elements: ${iconsRaw}, rendered in loose washes and ink outlines, integrated into the textured paper background. Soft, diffused lighting emphasizing earthy tones.`;
+        }
+
+        // 2. CHARACTER DNA
+        const gender = document.getElementById('char-gender').value;
+        const top = translate(document.getElementById('char-top').value) || "cream shirt";
+        const bot = translate(document.getElementById('char-bottom').value) || "brown trousers";
+        const charDNA = `A faceless ${gender}, wearing ${top} and ${bot}, rendered in ${selectedStyle === 'paper' ? 'origami style' : 'watercolor style'}`;
+
+        // 3. GENERATE LOOP
+        const mode = document.getElementById('mode').value;
+        let html = "";
+
+        if(mode === 'single') {
+            const act = translate(document.getElementById('act-single').value);
+            const head = document.getElementById('head-single').value;
+            const sub = document.getElementById('sub-single').value;
+            const txtPrompt = buildTextPrompt(head, sub, sosmed, textStyleDesc);
+            
+            const fullPrompt = `${mainStylePrompt}. ${charDNA}, ${act}${txtPrompt} ${envPrompt} ${ratio}`;
+            html = makeCard("Single Post", fullPrompt);
+        } else {
+            const count = document.getElementById('slide-count').value;
+            for(let i=1; i<=count; i++) {
+                const act = translate(document.getElementById(`act-${i}`).value);
+                const head = document.getElementById(`head-${i}`).value;
+                const sub = document.getElementById(`sub-${i}`).value;
+                const txtPrompt = buildTextPrompt(head, sub, sosmed, textStyleDesc);
+
+                const fullPrompt = `${mainStylePrompt}. ${charDNA}, ${act}${txtPrompt} ${envPrompt} ${ratio}`;
+                html += makeCard(`Slide ${i}`, fullPrompt);
+            }
+        }
+
+        document.getElementById('outputContainer').innerHTML = html;
+        document.getElementById('resultArea').style.display = 'block';
+    }
+
+    function makeCard(title, text) {
+        const uniqueId = "prompt-" + Math.random().toString(36).substr(2, 9);
+        return `
+        <div class="prompt-card">
+            <div style="margin-bottom:5px; color:#888; font-size:10px; text-transform:uppercase; font-weight:bold;">${title}</div>
+            <div id="${uniqueId}" class="prompt-text-content">${text}</div>
+            <button class="copy-btn" onclick="copySpecificText('${uniqueId}', this)">COPY</button>
+        </div>`;
+    }
+
+    function copySpecificText(elementId, btnElement) {
+        const textToCopy = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalText = btnElement.innerText;
+            btnElement.innerText = "COPIED!";
+            btnElement.style.background = "#7d6c5f";
+            setTimeout(() => {
+                btnElement.innerText = originalText;
+                btnElement.style.background = "#4a3f36";
+            }, 1500);
+        });
+    }
+
+    // Init
+    renderSlides();
+    updateUIForStyle();
+</script>
+
+</body>
+</html>
