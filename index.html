@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Poster Prompt Generator V2</title>
+    <style>
+        :root {
+            --primary: #D32F2F; /* Merah Cabai */
+            --secondary: #FFC107; /* Kuning Keju/Gorengan */
+            --dark: #212121;
+            --light: #FAFAFA;
+            --bg-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-top: 6px solid var(--primary);
+            width: 100%;
+            max-width: 800px;
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+        .section-title {
+            font-size: 1.1em;
+            color: var(--dark);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #444;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        .row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1;
+            min-width: 200px;
+        }
+        button#generateBtn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(211, 47, 47, 0.3);
+        }
+        button#generateBtn:hover {
+            background-color: #b71c1c;
+            transform: translateY(-2px);
+        }
+        button#generateBtn:active {
+            transform: translateY(0);
+        }
+        .output-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            color: #eee;
+            position: relative;
+        }
+        .output-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: block;
+        }
+        #result {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .copy-btn {
+            background-color: var(--secondary);
+            color: var(--dark);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #ffb300;
+        }
+        .note {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🍗 Poster Generator V2</h1>
+    
+    <div class="section-title">1. Visual & Background</div>
+    <div class="form-group">
+        <label>Deskripsi Visual Makanan (Detail):</label>
+        <textarea id="visual" rows="3" placeholder="Contoh: Ayam Geprek kriuk dengan sambal merah berminyak di atas piring rotan, ada es teh manis segar..."></textarea>
+    </div>
+
+    <div class="row">
+        <div class="col form-group">
+            <label>Warna Background:</label>
+            <select id="bgColor">
+                <option value="vibrant red">Merah Pedas (Vibrant Red)</option>
+                <option value="dark moody red">Merah Gelap (Dark Moody Red)</option>
+                <option value="warm orange">Oranye Hangat (Warm Orange)</option>
+                <option value="bright yellow">Kuning Terang (Bright Yellow)</option>
+                <option value="rustic dark wood">Kayu Gelap (Rustic Dark Wood)</option>
+                <option value="elegant black texture">Hitam Bertekstur (Elegant Black)</option>
+            </select>
+        </div>
+        <div class="col form-group">
+            <label>Rasio Gambar:</label>
+            <select id="ratio">
+                <option value="--ar 4:5">Portrait (IG Feed) 4:5</option>
+                <option value="--ar 9:16">Story / Reels 9:16</option>
+                <option value="--ar 1:1">Square 1:1</option>
+                <option value="--ar 16:9">Landscape (YouTube/Web) 16:9</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-title">2. Teks & Tipografi</div>
+    <div class="row">
+        <div class="col form-group">
+            <label>Judul Utama (Nama Produk):</label>
+            <input type="text" id="headline" placeholder="AYAM GEPREK JUARA">
+            <div class="note">*Otomatis menggunakan font tebal & menarik perhatian</div>
+        </div>
+        <div class="col form-group">
+            <label>Tagline (Sub-judul):</label>
+            <input type="text" id="tagline" placeholder="Pedasnya bikin nagih!">
+            <div class="note">*Otomatis menggunakan font tulisan tangan (handwritten)</div>
+        </div>
+    </div>
+
+    <div class="section-title">3. Info Tambahan (Opsional)</div>
+    <div class="row">
+        <div class="col form-group">
+            <label>Harga:</label>
+            <input type="text" id="price" placeholder="Rp 15.000">
+            <div class="note">*Akan jadi stiker/badge tebal</div>
+        </div>
+        <div class="col form-group">
+            <label>Nomor WhatsApp (Footer):</label>
+            <input type="text" id="wa" placeholder="0812-3456-7890">
+            <div class="note">*Muncul di bagian paling bawah</div>
+        </div>
+    </div>
+
+    <button id="generateBtn" onclick="generatePrompt()">✨ Buat Prompt Keren</button>
+
+    <div class="output-section">
+        <span class="output-label">Hasil Prompt (Siap Copy):</span>
+        <button class="copy-btn" onclick="copyToClipboard()">📋 Salin</button>
+        <div id="result">Prompt akan muncul di sini...</div>
+    </div>
+</div>
+
+<script>
+    function generatePrompt() {
+        // Ambil data dari input
+        const visual = document.getElementById('visual').value || "Delicious food photography";
+        const headline = document.getElementById('headline').value || "NAMA PRODUK";
+        const tagline = document.getElementById('tagline').value || "Rasanya mantap";
+        const price = document.getElementById('price').value;
+        const wa = document.getElementById('wa').value;
+        const bgColor = document.getElementById('bgColor').value;
+        const ratio = document.getElementById('ratio').value;
+
+        // --- Logika Prompt Builder ---
+
+        // 1. Base Scene & Background
+        let promptText = `Commercial social media advertisement poster. High-quality food photography of [${visual}] placed on a rustic wooden table in the foreground. `;
+        promptText += `A realistic hand enters from the right holding a smartphone displaying an Instagram interface post of the same product. `;
+        promptText += `The background is largely ${bgColor} with subtle, faint line-art patterns of spices, chili peppers, and ingredients related to the food. `;
+        
+        // 2. Tipografi Judul (Updated for attractive font)
+        // Minta AI menggunakan "eye-catching, stylized display font"
+        promptText += `Large, bold, bright yellow typography at the top reads "[${headline}]". The font style is an eye-catching, stylized display font designed to grab attention and look appetizing. `;
+        
+        // 3. Tipografi Tagline (Kontras dengan judul)
+        // Minta AI menggunakan "expressive handwritten script"
+        promptText += `Below it, smaller white text reads "[${tagline}]" using a contrasting expressive handwritten script font style. `;
+        
+        // 4. Logika Harga (Jika diisi)
+        if (price) {
+            promptText += `A noticeable, attractive circular 'best price' sticker or badge overlay on the side reads "[${price}]" in bold, clear impact font. `;
+        }
+
+        // 5. Logika Footer WA (Jika diisi)
+        if (wa) {
+            promptText += `At the very bottom area, a clean footer containing a small WhatsApp icon followed by the text "Info & Order: [${wa}]" in a clean, legible font. `;
+        }
+
+        // 6. Finishing Touches (Lighting, Emojis, Quality)
+        promptText += `Floating 3D expressive emojis (sunglasses face, fire, and heart eyes) near the phone. Professional studio lighting highlighting textures, steam rising from the food, sharp details, hyper-appetizing, 8k resolution. ${ratio}`;
+
+        // Tampilkan hasil
+        document.getElementById('result').innerText = promptText;
+    }
+
+    function copyToClipboard() {
+        const text = document.getElementById('result').innerText;
+        if (text === "Prompt akan muncul di sini...") {
+             alert("Klik 'Buat Prompt Keren' terlebih dahulu!");
+             return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Prompt berhasil disalin! Siap dipaste ke AI.");
+        }).catch(err => {
+            alert("Gagal menyalin. Silakan blok teks dan copy manual.");
+        });
+    }
+</script>
+
+</body>
+</html>
